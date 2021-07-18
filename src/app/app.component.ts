@@ -9,11 +9,18 @@ import { Observable, Subscription } from 'rxjs';
 })
 export class AppComponent {
   courses$: any;
+  course$: any;
+  authors$: Observable<any>;
   // courses!: any[];
   // subscription: Subscription;
 
   constructor(db: AngularFireDatabase) {
-    this.courses$ = db.list('/courses');
+    this.courses$ = db.list('/courses').valueChanges();
+
+    // To Get Object
+    this.course$ = db.object('/courses/1').valueChanges();
+
+    this.authors$ = db.object('/courses/authors/1').valueChanges();
 
     // this.subscription = db
     //   .list('courses')
