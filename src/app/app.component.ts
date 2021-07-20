@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -8,14 +8,16 @@ import { Observable, Subscription } from 'rxjs';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  courses$: any;
-  course$: any;
+  courses$: AngularFireList<any[]>;
+  courseObservable$;
+  course$;
   authors$: Observable<any>;
   // courses!: any[];
   // subscription: Subscription;
 
-  constructor(db: AngularFireDatabase) {
-    this.courses$ = db.list('/courses').valueChanges();
+  constructor(private db: AngularFireDatabase) {
+    this.courses$ = db.list('/courses');
+    this.courseObservable$ = this.courses$.snapshotChanges();
 
     // To Get Object
     this.course$ = db.object('/courses/1').valueChanges();
@@ -33,4 +35,30 @@ export class AppComponent {
   // ngOnDestroy(): void {
   //   this.subscription.unsubscribe();
   // }
+
+  add(course: HTMLInputElement) {
+    this.courses$.push({
+      name: course.value,
+      price: 150,
+      isLive: true,
+      sections: [
+        { title: 'Components' },
+        { title: 'Directives' },
+        { title: 'Templates' },
+      ],
+    } as any);
+    course.value = '';
+  }
+  update(course: any) {
+    this.db.object('/courses/' + course.key).update({
+      title: 'New Title',
+      isLive: true,
+    });
+  }
+  delete(course: any) {
+    this.db
+      .object('/courses/' + course.key)
+      .remove()
+      .then((x) => console.log('Deleted'));
+  }
 }

@@ -10,9 +10,27 @@
 <p>
   {{ authors$ | async | json }}
 </p> -->
+<div class="row m-3">
+  <div class="form-group col-6">
+    <input
+      type="text"
+      class="form-control"
+      (keyup.enter)="add(course)"
+      #course
+    />
+  </div>
+</div>
 
-<ul *ngIf="authors$ | async as author">
+<ul>
+  <li *ngFor="let course of courseObservable$ | async">
+    {{ course.key }}
+    <button (click)="update(course.key)">Update</button>
+    <button (click)="delete(course.key)">Delete</button>
+  </li>
+</ul>
+
+<!-- <ul *ngIf="authors$ | async as author">
   <li>{{ author?.name }}</li>
   <li>{{ author?.students }}</li>
   <li>{{ author?.isPremium }}</li>
-</ul>
+</ul> -->
